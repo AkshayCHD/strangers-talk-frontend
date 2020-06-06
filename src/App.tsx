@@ -79,7 +79,6 @@ function App() {
   const classes = useStyles();
   const [isJoined, setisJoined] = useState(false);
 
-  const [appId, setAppId] = useState("");
   const [channel, setChannel] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,8 +100,9 @@ function App() {
     try {
       const uid = isNaN(Number(defaultState.uid)) ? null : Number(defaultState.uid);
 
-      // initializes the client with appId
-      await client.init(appId);
+			// initializes the client with appId
+			let appid = process.env.REACT_APP_AGORA_APP_ID
+			await client.init(appid?.toString() || "");
 
       // joins a channel with a token, channel, user id
       await client.join(defaultState.token, channel, uid);
@@ -192,15 +192,6 @@ function App() {
                 <form noValidate autoComplete="off">
                   <TextField
                     required
-                    value={appId}
-                    onChange={(e) => setAppId(e.target.value)}
-                    id="appId"
-                    label="App ID"
-                    fullWidth
-                    margin="normal"
-                  />
-                  <TextField
-                    required
                     value={channel}
                     onChange={(e) => setChannel(e.target.value)}
                     id="channel"
@@ -208,7 +199,6 @@ function App() {
                     fullWidth
                     margin="normal"
                   />
-
                 </form>
               </CardContent>
               <CardActions className={classes.buttonContainer}>
