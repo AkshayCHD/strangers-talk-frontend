@@ -82,7 +82,6 @@ function App() {
   const classes = useStyles();
   const [isJoined, setisJoined] = useState(false);
 
-  const [channel, setChannel] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [agoraClient, setClient] = useState<any>(undefined)
@@ -93,60 +92,56 @@ function App() {
 
 	useEffect(() => {
     socket.on('roomCreated', async (data: any) => {
-			console.log(`Room created with Id ${data.room}`)
-		})
-		socket.on('roomDeleted', async (data: any) => {
-			console.log(`Room deleted with Id ${data.room}`)
-		})
+			console.log(data)
+			let channel = data.room.toString()
+			const client = AgoraRTC.createClient({ mode: defaultState.mode, codec: defaultState.codec })
+			setClient(client)
+			try {
+				const uid = isNaN(Number(defaultState.uid)) ? null : Number(defaultState.uid);
 
-    socket.emit('login')
-	}, [])
+				// initializes the client with appId
+				let appid = process.env.REACT_APP_AGORA_APP_ID
+				await client.init(appid?.toString() || "");
 
-  // Starts the video call
-  const join = async () => {
-    // Creates a new agora client with given parameters.
-    // mode can be 'rtc' for real time communications or 'live' for live broadcasting.
+				// joins a channel with a token, channel, user id
+				await client.join(defaultState.token, channel, uid);
+
+				// create a ne stream
+				const stream = AgoraRTC.createStream({
+					streamID: uid || 12345,
+					video: true,
+					audio: true,
+					screen: false
+				});
+
+				// stream.setVideoProfile('480p_4')
+
+				// Initalize the stream
+				await stream.init();
+
+				// Publish the stream to the channel.
+				await client.publish(stream);
+
+				// Set the defaultState appropriately
+				setIsPublished(true);
+				setisJoined(true);
+				enqueueSnackbar(`Joined channel ${channel}`, { variant: "info" });
+			} catch (err) {
+				console.log(err)
+				enqueueSnackbar(`Failed to join, ${err}`, { variant: "error" });
+			} finally {
+				setIsLoading(false);
+			}
+    })
+  }, [])
+
+  const loginRequest = async () => {
     const client = AgoraRTC.createClient({ mode: defaultState.mode, codec: defaultState.codec })
-    // Loads client into the state
+    // Loads client into the defaultState
     setClient(client)
     setIsLoading(true);
-    try {
-      const uid = isNaN(Number(defaultState.uid)) ? null : Number(defaultState.uid);
-
-			// initializes the client with appId
-			let appid = process.env.REACT_APP_AGORA_APP_ID
-			await client.init(appid?.toString() || "");
-
-      // joins a channel with a token, channel, user id
-      await client.join(defaultState.token, channel, uid);
-
-      // create a ne stream
-      const stream = AgoraRTC.createStream({
-        streamID: uid || 12345,
-        video: true,
-        audio: true,
-        screen: false
-      });
-
-      // stream.setVideoProfile('480p_4')
-
-      // Initalize the stream
-      await stream.init();
-
-      // Publish the stream to the channel.
-      await client.publish(stream);
-
-      // Set the state appropriately
-      setIsPublished(true);
-      setisJoined(true);
-      enqueueSnackbar(`Joined channel ${defaultState.channel}`, { variant: "info" });
-    } catch (err) {
-      enqueueSnackbar(`Failed to join, ${err}`, { variant: "error" });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+    socket.emit("login")
+  }
 
   // Leaves the channel on invoking the function call.
   const leave = async () => {
@@ -159,24 +154,27 @@ function App() {
         agoraClient.unpublish(localStream);
       }
       // leave the channel
-      await agoraClient.leave();
+			await agoraClient.leave();
+
+      socket.emit('logout')
       setIsPublished(false);
-      setisJoined(false);
+			setisJoined(false);
+      setClient(undefined)
       enqueueSnackbar("Left channel", { variant: "info" });
     } catch (err) {
+      console.log(err)
       enqueueSnackbar(`Failed to leave, ${err}`, { variant: "error" });
     } finally {
       setIsLoading(false);
     }
   };
 
-
   const JoinLeaveBtn = () => {
     return (
       <Button
         className={classes.buttonItem}
         color={isJoined ? "secondary" : "primary"}
-        onClick={isJoined ? leave : join}
+        onClick={isJoined ? leave : loginRequest}
         variant="contained"
         disabled={isLoading}
       >
@@ -201,19 +199,6 @@ function App() {
           {/* form */}
           <Grid item xs={12} md={4}>
             <Card>
-              <CardContent>
-                <form noValidate autoComplete="off">
-                  <TextField
-                    required
-                    value={channel}
-                    onChange={(e) => setChannel(e.target.value)}
-                    id="channel"
-                    label="Channel"
-                    fullWidth
-                    margin="normal"
-                  />
-                </form>
-              </CardContent>
               <CardActions className={classes.buttonContainer}>
                 <JoinLeaveBtn />
               </CardActions>
