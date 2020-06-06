@@ -29,6 +29,7 @@ import { useMediaStream } from "./hooks";
 // This is an enhanced Web SDK. The enhancement basically converts the callback syntax into promises.
 // Rest of the code will use async/await syntax in conjuction with these promises.
 import AgoraRTC from "./utils/AgoraEnhancer";
+import StreamArea from "./components/StreamArea";
 
 const socket = io('http://localhost:4000/')
 
@@ -209,20 +210,7 @@ function App() {
             </Card>
           </Grid>
 
-          {/* display area */}
-          <Grid item xs={12} md={8}>
-            {localStream && (
-              <StreamPlayer stream={localStream} fit="contain" label="local" />
-            )}
-            {remoteStreamList.map((stream: any) => (
-              <StreamPlayer
-                key={stream.getId()}
-                stream={stream}
-                fit="contain"
-                label={stream.getId()}
-              />
-            ))}
-          </Grid>
+          <StreamArea remoteStreamList={remoteStreamList} localStream={localStream}/>
         </Grid>
       </Container>
     </React.Fragment>
