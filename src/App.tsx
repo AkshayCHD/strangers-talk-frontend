@@ -133,6 +133,10 @@ function App() {
 				setIsLoading(false);
 			}
     })
+
+    socket.on('roomDeleted', async (data: any) => {
+      enqueueSnackbar(`Pair left channel ${data.room}`, { variant: "info" });
+    })
   }, [])
 
   const loginRequest = async () => {
