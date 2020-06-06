@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -10,6 +10,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import io from 'socket.io-client'
 
 // Declarative Stream Player for React
 // Wrapped around native HTML video and audio tag with added Agora features
@@ -28,6 +29,8 @@ import { useMediaStream } from "./hooks";
 // This is an enhanced Web SDK. The enhancement basically converts the callback syntax into promises.
 // Rest of the code will use async/await syntax in conjuction with these promises.
 import AgoraRTC from "./utils/AgoraEnhancer";
+
+const socket = io('http://localhost:4000/')
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -86,8 +89,18 @@ function App() {
 
   let [localStream, remoteStreamList, streamList] = useMediaStream(agoraClient);
 
-  const { enqueueSnackbar } = useSnackbar();
+	const { enqueueSnackbar } = useSnackbar();
 
+	useEffect(() => {
+    socket.on('roomCreated', async (data: any) => {
+			console.log(`Room created with Id ${data.room}`)
+		})
+		socket.on('roomDeleted', async (data: any) => {
+			console.log(`Room deleted with Id ${data.room}`)
+		})
+
+    socket.emit('login')
+	}, [])
 
   // Starts the video call
   const join = async () => {
