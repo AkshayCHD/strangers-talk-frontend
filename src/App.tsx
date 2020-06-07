@@ -30,6 +30,7 @@ import { useMediaStream } from "./hooks";
 // Rest of the code will use async/await syntax in conjuction with these promises.
 import AgoraRTC from "./utils/AgoraEnhancer";
 import StreamArea from "./components/StreamArea";
+import JoinLeaveButton from "./components/JoinLeaveButton";
 
 const socket = io('http://localhost:4000/')
 
@@ -174,21 +175,6 @@ function App() {
     }
   };
 
-  const JoinLeaveBtn = () => {
-    return (
-      <Button
-        className={classes.buttonItem}
-        color={isJoined ? "secondary" : "primary"}
-        onClick={isJoined ? leave : loginRequest}
-        variant="contained"
-        disabled={isLoading}
-      >
-        {isJoined ? "Leave" : "Join"}
-      </Button>
-    );
-  };
-
-
   return (
     <React.Fragment>
       <AppBar color="primary">
@@ -199,20 +185,8 @@ function App() {
         </Toolbar>
       </AppBar>
       <Toolbar className={classes.divider} />
-      <Container>
-        <Grid container spacing={3}>
-          {/* form */}
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardActions className={classes.buttonContainer}>
-                <JoinLeaveBtn />
-              </CardActions>
-            </Card>
-          </Grid>
-
-          <StreamArea remoteStreamList={remoteStreamList} localStream={localStream}/>
-        </Grid>
-      </Container>
+			<JoinLeaveButton />
+			<StreamArea remoteStreamList={remoteStreamList} localStream={localStream}/>
     </React.Fragment>
   );
 }
