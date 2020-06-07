@@ -1,36 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import Container from "@material-ui/core/Container";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
 import io from 'socket.io-client'
-
-// Declarative Stream Player for React
-// Wrapped around native HTML video and audio tag with added Agora features
-import StreamPlayer from "agora-stream-player";
 
 import { SnackbarProvider, useSnackbar } from "notistack";
 
-// These customs hooks let any components in the application
-// to directly use the required parameters and create clean functional components.
-// useCamera hook returns a list of cameras when the hook is called
-// useMicrophone hook returns a list of microphones when the hook is called
-// useMediaStream hook returns localStream, a list of remote streams and
-// a contatenated list of localstream and remote streams when the hook is called
 import { useMediaStream } from "./hooks";
 
-// This is an enhanced Web SDK. The enhancement basically converts the callback syntax into promises.
-// Rest of the code will use async/await syntax in conjuction with these promises.
 import AgoraRTC from "./utils/AgoraEnhancer";
 import StreamArea from "./components/StreamArea";
 import JoinLeaveButton from "./components/JoinLeaveButton";
+import Navbar from "./components/Navbar";
 
 const socket = io('http://localhost:4000/')
 
@@ -177,15 +156,8 @@ function App() {
 
   return (
     <React.Fragment>
-      <AppBar color="primary">
-        <Toolbar>
-          <Typography className={classes.title} variant="h6">
-            Basic Communication
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Toolbar className={classes.divider} />
-			<JoinLeaveButton />
+      <Navbar />
+			<JoinLeaveButton isJoined={isJoined} isLoading={isLoading} leave={leave} loginRequest={loginRequest}/>
 			<StreamArea remoteStreamList={remoteStreamList} localStream={localStream}/>
     </React.Fragment>
   );
