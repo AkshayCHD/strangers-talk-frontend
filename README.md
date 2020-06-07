@@ -27,6 +27,6 @@ in the root directory of the project. Then add the following in `.env` file.
 REACT_APP_AGORA_APP_ID="YOUR_AGORA_APP_ID"
 ```
 
-## Project Screenshots
-The following is the screenshot of the project UI
-![Strangers Talk Frontend](https://drive.google.com/uc?export=view&id=1IVii_mGY7urpax-BhcuM4mXAEutDGJRE)
+## Project Demo
+The following is the gif demo of the project
+![Strangers Talk Frontend](https://drive.google.com/uc?export=view&id=1bTfPIqUjxEnSVmVNyqyoG0rxWZIAigF0)
