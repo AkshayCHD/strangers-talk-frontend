@@ -12,21 +12,11 @@ const useMediaStream = (client: any, filter?: (streamId: number) => boolean): an
         return;
       }
       const { stream } = evt;
-      setRemoteStreamList(streamList => [...streamList, stream]);
+			setRemoteStreamList(streamList => [stream]);
     };
     // remove stream
     const removeRemote = (evt: any) => {
-      const { stream } = evt;
-      if (stream) {
-        const id = stream.getId();
-        const index = remoteStreamList.findIndex(item => item.getId() === id);
-        if (index !== -1) {
-          setRemoteStreamList(streamList => {
-            streamList.splice(index, 1);
-            return streamList;
-          });
-        }
-      }
+			setRemoteStreamList([])
     };
     // subscribe when added
     const doSub = (evt: any) => {
@@ -50,12 +40,12 @@ const useMediaStream = (client: any, filter?: (streamId: number) => boolean): an
       const stop = stream.stop;
       const close = stream.close;
       stream.close = (func => () => {
-        func()     
-        setLocalStream(undefined);   
+        func()
+        setLocalStream(undefined);
       })(close);
       stream.stop = (func => () => {
-        func()     
-        setLocalStream(undefined);   
+        func()
+        setLocalStream(undefined);
       })(stop);
       setLocalStream(stream)
     };

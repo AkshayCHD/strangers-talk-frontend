@@ -5,7 +5,7 @@ import { styled } from "@material-ui/core/styles"
 export default function Navbar() {
 	return (
 		<NavBox>
-			Stranger Talks
+			Strangers Talk
 		</NavBox>
 	)
 }
